@@ -17,7 +17,7 @@ src_launcher="$REPO_ROOT/scripts/run-runtime.sh"
 lib_dir="${HOME}/.local/lib"
 bin_dir="${HOME}/.local/bin"
 
-dst_lib="$lib_dir/liblinuwux.so"
+dst_lib="$lib_dir/liblinuwux_runtime.so"
 dst_launcher="$bin_dir/linuwux"
 
 if [ ! -f "$src_lib" ]; then

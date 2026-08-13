@@ -34,10 +34,10 @@ make
 sh scripts/install-runtime.sh
 ```
 
-This installs the shared library as:
+This installs the runtime as:
 
 ```text
-~/.local/lib/liblinuwux.so
+~/.local/lib/liblinuwux_runtime.so
 ```
 
 and the launcher as:
@@ -46,44 +46,127 @@ and the launcher as:
 ~/.local/bin/linuwux
 ```
 
-The runtime can then be used by placing the `linuwux` launcher in front of
-the command that would normally be executed:
+The `linuwux` launcher injects the runtime through `LD_PRELOAD` while
+preserving an existing preload chain.
 
-```sh
-linuwux COMMAND [ARG...]
-```
+#### Steam
 
-For Steam, use the following launch option:
+Select Proton-CachyOS or Proton-GE as the game's compatibility tool.
+
+Open **Properties → General → Launch Options** and add:
 
 ```text
 ~/.local/bin/linuwux %command%
 ```
 
-The launcher loads the runtime through `LD_PRELOAD` while preserving any
-existing preload chain.
+#### Faugus Launcher
 
-The runtime can also be loaded manually without using the installed
-launcher:
+Select Proton-CachyOS or Proton-GE as the game's runner.
 
-```sh
-LD_PRELOAD=/path/to/liblinuwux_runtime.so COMMAND
+1. Right-click the game.
+2. Select **Edit**.
+3. Find **Game Arguments**.
+4. Add:
+
+```text
+LD_PRELOAD=/home/YOUR_USERNAME/.local/lib/liblinuwux_runtime.so
 ```
 
-Debug logging can be enabled with:
+Replace `YOUR_USERNAME` with your Linux username.
+
+If the game already has arguments, keep them and add the `LD_PRELOAD`
+assignment alongside them.
+
+For runtime logging:
+
+```text
+LINUWUX_DEBUG=1 LD_PRELOAD=/home/YOUR_USERNAME/.local/lib/liblinuwux_runtime.so
+```
+
+#### Heroic Games Launcher
+
+Select Proton-GE or another compatible community Proton build.
+
+1. Open the game's **Settings**.
+2. Select **Advanced**.
+3. Find **Environment Variables**.
+4. Add:
+
+```text
+Name:  LD_PRELOAD
+Value: /home/YOUR_USERNAME/.local/lib/liblinuwux_runtime.so
+```
+
+Replace `YOUR_USERNAME` with your Linux username.
+
+For runtime logging, add another environment variable:
+
+```text
+Name:  LINUWUX_DEBUG
+Value: 1
+```
+
+Do not put `LD_PRELOAD=...` in **Game Arguments**. Heroic provides a
+dedicated environment-variable configuration.
+
+#### Lutris
+
+Open the game's configuration and go to:
+
+**System options → Environment variables**
+
+Add:
+
+```text
+Key:   LD_PRELOAD
+Value: /home/YOUR_USERNAME/.local/lib/liblinuwux_runtime.so
+```
+
+Replace `YOUR_USERNAME` with your Linux username.
+
+For runtime logging:
+
+```text
+Key:   LINUWUX_DEBUG
+Value: 1
+```
+
+#### Command line
+
+Any Linux-side command can be wrapped directly:
 
 ```sh
-LINUWUX_DEBUG=1 linuwux COMMAND
+~/.local/bin/linuwux COMMAND [ARG...]
+```
+
+The runtime can also be injected manually:
+
+```sh
+LD_PRELOAD="$HOME/.local/lib/liblinuwux_runtime.so${LD_PRELOAD:+:$LD_PRELOAD}" \
+COMMAND [ARG...]
+```
+
+Using the `linuwux` launcher is preferable when possible because it
+preserves the existing preload chain automatically.
+
+#### Debugging
+
+Enable runtime logging with:
+
+```sh
+LINUWUX_DEBUG=1 ~/.local/bin/linuwux COMMAND [ARG...]
 ```
 
 A different runtime library can be selected explicitly with:
 
 ```sh
-LINUWUX_PRELOAD=/path/to/liblinuwux_runtime.so linuwux COMMAND
+LINUWUX_PRELOAD=/path/to/liblinuwux_runtime.so \
+~/.local/bin/linuwux COMMAND [ARG...]
 ```
 
-The `linuwux` launcher is not itself a Proton launcher and does not select
-or configure a Proton version. It wraps an existing command and injects the
-runtime into its Linux-side process environment.
+The `linuwux` launcher does not select or configure Proton. It wraps the
+existing Linux-side launch command and injects the runtime into its process
+environment.
 
 ### Which Proton versions are supported?
 

@@ -10,7 +10,7 @@ library.
 
 Download:
 
-- `liblinuwux.so`
+- `liblinuwux_runtime.so`
 - `linuwux`
 - `SHA256SUMS`
 
@@ -33,7 +33,7 @@ mkdir -p ~/.local/lib ~/.local/bin
 Install the runtime:
 
 ```sh
-install -m 0755 liblinuwux.so ~/.local/lib/liblinuwux.so
+install -m 0755 liblinuwux_runtime.so ~/.local/lib/liblinuwux_runtime.so
 ```
 
 Install the launcher:
@@ -80,7 +80,7 @@ Configure the game so the Linux-side launch command is wrapped with:
 Alternatively, the runtime can be injected manually through:
 
 ```text
-LD_PRELOAD=/home/YOUR_USERNAME/.local/lib/liblinuwux.so
+LD_PRELOAD=/home/YOUR_USERNAME/.local/lib/liblinuwux_runtime.so
 ```
 
 The exact integration can depend on the launcher and UMU configuration.
@@ -92,7 +92,7 @@ Use Proton-GE or another compatible community Proton build.
 The runtime can be supplied through the game's environment:
 
 ```text
-LD_PRELOAD=/home/YOUR_USERNAME/.local/lib/liblinuwux.so
+LD_PRELOAD=/home/YOUR_USERNAME/.local/lib/liblinuwux_runtime.so
 ```
 
 Launcher-specific behavior may vary while the runtime remains experimental.
@@ -102,7 +102,7 @@ Launcher-specific behavior may vary while the runtime remains experimental.
 Add the following environment variable to the game configuration:
 
 ```text
-LD_PRELOAD=/home/YOUR_USERNAME/.local/lib/liblinuwux.so
+LD_PRELOAD=/home/YOUR_USERNAME/.local/lib/liblinuwux_runtime.so
 ```
 
 Use a compatible community Wine/Proton runner.
@@ -118,7 +118,7 @@ Any existing Linux-side launch command can be wrapped with:
 The runtime can also be injected manually:
 
 ```sh
-LD_PRELOAD="$HOME/.local/lib/liblinuwux.so${LD_PRELOAD:+:$LD_PRELOAD}" \
+LD_PRELOAD="$HOME/.local/lib/liblinuwux_runtime.so${LD_PRELOAD:+:$LD_PRELOAD}" \
 COMMAND [ARG...]
 ```
 

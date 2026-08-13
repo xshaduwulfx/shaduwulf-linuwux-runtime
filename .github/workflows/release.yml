@@ -50,7 +50,7 @@ jobs:
 
           install -m 0755 \
             liblinuwux_runtime.so \
-            dist/liblinuwux.so
+            dist/liblinuwux_runtime.so
 
           install -m 0755 \
             scripts/run-runtime.sh \
@@ -59,7 +59,7 @@ jobs:
           (
             cd dist
             sha256sum \
-              liblinuwux.so \
+              liblinuwux_runtime.so \
               linuwux \
               > SHA256SUMS
           )
@@ -73,7 +73,7 @@ jobs:
         run: |
           gh release create \
             "${GITHUB_REF_NAME}" \
-            dist/liblinuwux.so \
+            dist/liblinuwux_runtime.so \
             dist/linuwux \
             dist/SHA256SUMS \
             --title "${GITHUB_REF_NAME}" \

@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-lib="${LINUWUX_PRELOAD:-${HOME}/.local/lib/liblinuwux.so}"
+lib="${LINUWUX_PRELOAD:-${HOME}/.local/lib/liblinuwux_runtime.so}"
 
 if [ ! -f "$lib" ]; then
     echo "linuwux: runtime not found: $lib" >&2
