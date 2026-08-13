@@ -77,4 +77,5 @@ jobs:
             dist/linuwux \
             dist/SHA256SUMS \
             --title "${GITHUB_REF_NAME}" \
-            --generate-notes
+            --notes-file RELEASE.md \
+            --verify-tag
