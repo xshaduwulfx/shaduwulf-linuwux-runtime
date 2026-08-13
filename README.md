@@ -164,68 +164,18 @@ Wine/Proton patch.
 
 The runtime is intentionally modular.
 
-Its source tree separates the major LinUwUx mechanisms into focused
-components:
+Its main mechanisms are split into focused components for CPUID handling,
+syscall redirection, Syscall User Dispatch, KUSER_SHARED_DATA, faketime,
+Wine-prefix integration, signal handling and `prctl` interposition.
 
-```text
-src/
-├── runtime.c
-├── runtime.h
-├── signals.c
-├── cpuid.c
-├── cpuid.h
-├── syscall.c
-├── syscall.h
-├── sud.c
-├── sud.h
-├── kuser.c
-├── kuser.h
-├── time.c
-├── time.h
-├── registry.c
-├── registry.h
-├── prctl.c
-└── prctl_entry.S
-```
-
-The main responsibilities are divided roughly as follows:
-
-- `runtime.c` handles runtime initialization, environment setup and common
-  runtime facilities.
-- `signals.c` manages the signal interposition and dispatch path used by
-  the runtime.
-- `cpuid.c` implements CPUID interception, LinUwUx command handling and CPU
-  vendor spoofing.
-- `syscall.c` implements syscall redirection and the LinUwUx syscall
-  trampoline ABI.
-- `sud.c` manages Linux Syscall User Dispatch state and selector handling.
-- `kuser.c` manages the emulated `KUSER_SHARED_DATA` page and its LinUwUx
-  modifications.
-- `time.c` implements faketime state and the required time-function
-  interposition.
-- `registry.c` handles the Wine prefix state required by LinUwUx, including
-  `HwProfileGuid`.
-- `prctl.c` and `prctl_entry.S` provide the `prctl` interposition required
-  to observe and integrate with Syscall User Dispatch.
-
-These modules are compiled together into a single preloadable shared
-library:
+These components are linked into a single preloadable shared library:
 
 ```text
 liblinuwux_runtime.so
 ```
 
-Internal runtime symbols use hidden ELF visibility. Only the interfaces
-that must participate in dynamic interposition are exported.
-
-The current dynamic interposers are:
-
-```text
-clock_gettime
-gettimeofday
-prctl
-sigaction
-```
+See the [Architecture](#architecture) section for the complete module layout
+and runtime flow.
 
 ### Is this part of Shaduwulf's Proton LinUwUx?
 
@@ -302,16 +252,16 @@ The current implementation targets x86-64 Linux.
 
 The runtime is built as:
 
-{fence}text
+```text
 liblinuwux_runtime.so
-{fence}
+```
 
 It is loaded into the target process through `LD_PRELOAD`.
 
 The implementation is intentionally split into focused runtime modules.
 Each module is responsible for a distinct part of the LinUwUx behavior:
 
-{fence}text
+```text
 src/
 ├── runtime.c       runtime initialization and common infrastructure
 ├── signals.c       signal interposition and dispatch
@@ -323,7 +273,7 @@ src/
 ├── kuser.c         KUSER_SHARED_DATA setup and patching
 ├── time.c          faketime state and time-function interposition
 └── registry.c      Wine-prefix hardware-profile registry handling
-{fence}
+```
 
 This separation keeps the LinUwUx-specific mechanisms isolated from one
 another instead of concentrating the runtime behavior in a single
@@ -337,12 +287,12 @@ the interfaces that must interpose host functions are exported.
 
 The currently exported interposers are:
 
-{fence}text
+```text
 clock_gettime
 gettimeofday
 prctl
 sigaction
-{fence}
+```
 
 Internal `linuwux_*` interfaces remain private to the runtime and are linked
 between the individual modules without becoming part of the public dynamic
@@ -352,7 +302,7 @@ symbol table.
 
 At a high level, the runtime operates as follows:
 
-{fence}text
+```text
 LD_PRELOAD
     │
     ▼
@@ -364,10 +314,10 @@ runtime initialization
     ├── CPUID faulting / command protocol
     ├── Syscall User Dispatch
     └── Wine-prefix integration
-             │
-             ▼
-       LinUwUx runtime behavior
-{fence}
+    │
+    ▼
+LinUwUx runtime behavior
+```
 
 The architecture is designed so that these mechanisms can evolve
 independently while continuing to expose a single preloadable runtime
@@ -393,52 +343,6 @@ The resulting shared library is created in the repository root:
 liblinuwux_runtime.so
 ```
 
-## Install
-
-After building:
-
-```sh
-sh scripts/install-runtime.sh
-```
-
-The installer places the runtime at:
-
-```text
-~/.local/lib/liblinuwux.so
-```
-
-and installs the launcher as:
-
-```text
-~/.local/bin/linuwux
-```
-
-## Usage
-
-Run a command through the runtime with:
-
-```sh
-linuwux COMMAND [ARG...]
-```
-
-For a Steam launch option:
-
-```text
-~/.local/bin/linuwux %command%
-```
-
-A different runtime library can be selected with:
-
-```sh
-LINUWUX_PRELOAD=/path/to/liblinuwux_runtime.so linuwux COMMAND
-```
-
-Debug logging can be enabled with:
-
-```sh
-LINUWUX_DEBUG=1 linuwux COMMAND
-```
-
 ## Tests
 
 Focused runtime tests are currently provided for:
@@ -462,26 +366,14 @@ the relevant behavior is implemented in a standalone shared library rather
 than requiring those modifications to remain embedded in a custom
 Wine/Proton source tree.
 
-The original LinUwUx behavior and protocol are the work of LinUwUx.
-
-See `NOTICE.md` for provenance and attribution information.
-
 ## Credits
 
-Shaduwulf's LinUwUx Runtime is based on the functionality and protocol
-introduced by the original `LinUwUx.patch`.
-
-The original LinUwUx work, including the behavior and protocol implemented
-by `LinUwUx.patch`, was created by **LinUwUx**.
-
-This project adapts, restructures and extends that work into a standalone
-preloadable runtime, allowing the LinUwUx behavior to operate outside a
-patched Wine/Proton source tree.
+The original LinUwUx work and `LinUwUx.patch` were created by **LinUwUx**.
 
 Special thanks to **LinUwUx** for the original work and for giving this
 standalone rework the green light.
 
-For additional provenance and licensing information, see `NOTICE.md`.
+For provenance and licensing details, see `NOTICE.md`.
 
 ## License
 
