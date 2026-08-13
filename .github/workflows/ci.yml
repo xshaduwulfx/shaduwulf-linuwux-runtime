@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Build runtime
+        run: |
+          make clean
+          make
+
+      - name: Check exported symbols
+        run: |
+          exports="$(
+            nm -D --defined-only liblinuwux_runtime.so \
+              | awk '{print $3}' \
+              | sort
+          )"
+
+          expected="$(
+            printf '%s\n' \
+              clock_gettime \
+              gettimeofday \
+              prctl \
+              sigaction \
+              | sort
+          )"
+
+          if [ "$exports" != "$expected" ]; then
+            echo "Unexpected dynamic exports:"
+            printf '%s\n' "$exports"
+            exit 1
+          fi
+
+      - name: Build syscall test
+        run: |
+          gcc \
+            -O2 -Wall -Wextra -Werror \
+            tests/syscall_resume.c \
+            src/runtime.o \
+            src/signals.o \
+            src/cpuid.o \
+            src/syscall.o \
+            src/kuser.o \
+            src/time.o \
+            src/registry.o \
+            src/sud.o \
+            src/prctl.o \
+            src/prctl_entry.o \
+            -ldl \
+            -o /tmp/syscall_resume
+
+      - name: Run syscall test
+        env:
+          WINEPREFIX: /tmp/linuwux-test-prefix
+        run: |
+          mkdir -p "$WINEPREFIX"
+          /tmp/syscall_resume
+
+      - name: Build faketime test
+        run: |
+          gcc \
+            -O2 -Wall -Wextra -Werror \
+            tests/faketime_cpuid.c \
+            -o /tmp/faketime_cpuid

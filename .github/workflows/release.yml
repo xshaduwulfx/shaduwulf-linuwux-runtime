@@ -1,0 +1,80 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Build runtime
+        run: |
+          make clean
+          make
+
+      - name: Check exported symbols
+        run: |
+          exports="$(
+            nm -D --defined-only liblinuwux_runtime.so \
+              | awk '{print $3}' \
+              | sort
+          )"
+
+          expected="$(
+            printf '%s\n' \
+              clock_gettime \
+              gettimeofday \
+              prctl \
+              sigaction \
+              | sort
+          )"
+
+          if [ "$exports" != "$expected" ]; then
+            echo "Unexpected dynamic exports:"
+            printf '%s\n' "$exports"
+            exit 1
+          fi
+
+      - name: Prepare release assets
+        run: |
+          mkdir -p dist
+
+          install -m 0755 \
+            liblinuwux_runtime.so \
+            dist/liblinuwux.so
+
+          install -m 0755 \
+            scripts/run-runtime.sh \
+            dist/linuwux
+
+          (
+            cd dist
+            sha256sum \
+              liblinuwux.so \
+              linuwux \
+              > SHA256SUMS
+          )
+
+      - name: Show checksums
+        run: cat dist/SHA256SUMS
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create \
+            "${GITHUB_REF_NAME}" \
+            dist/liblinuwux.so \
+            dist/linuwux \
+            dist/SHA256SUMS \
+            --title "${GITHUB_REF_NAME}" \
+            --generate-notes
