@@ -3,12 +3,7 @@
 Standalone LinUwUx runtime rework distributed as a preloadable Linux shared
 library.
 
-> [!IMPORTANT]
-> This project is experimental and under active development.
-
 ## Assets
-
-Download:
 
 - `liblinuwux_runtime.so`
 - `linuwux`
@@ -20,22 +15,17 @@ Verify the downloaded assets with:
 sha256sum -c SHA256SUMS
 ```
 
-## Installation and usage
+## Information
 
-For installation instructions, launcher-specific setup and usage, see the
+For installation and launcher-specific usage, see the
 [FAQ](https://github.com/xshaduwulfx/shaduwulf-linuwux-runtime#faq).
 
-## Compatibility
-
-Primary targets:
-
-- Proton-CachyOS
-- Proton-GE
-
+Primary targets are **Proton-CachyOS** and **Proton-GE**.
 Valve's official Proton is currently outside the primary supported target.
 
-## License and credits
+Licensed under **LGPL-2.1-or-later**. See `LICENSE` and `NOTICE.md` for
+licensing, provenance and attribution.
 
-Licensed under the GNU Lesser General Public License version 2.1 or later.
+---
 
-See `LICENSE` and `NOTICE.md` for licensing, provenance and attribution.
+*Built automatically with GitHub Actions.*
