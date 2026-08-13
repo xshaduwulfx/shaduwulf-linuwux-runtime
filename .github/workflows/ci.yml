@@ -63,12 +63,13 @@ jobs:
             -ldl \
             -o /tmp/syscall_resume
 
-      - name: Run syscall test
-        env:
-          WINEPREFIX: /tmp/linuwux-test-prefix
+      - name: Note syscall runtime test limitation
         run: |
-          mkdir -p "$WINEPREFIX"
-          /tmp/syscall_resume
+          echo "syscall_resume is compiled in CI but not executed on"
+          echo "GitHub-hosted runners because the test depends on"
+          echo "kernel/runtime SIGSYS and Syscall User Dispatch behavior."
+          echo "The full runtime test is executed on supported local"
+          echo "Proton-CachyOS / Proton-GE environments."
 
       - name: Build faketime test
         run: |
