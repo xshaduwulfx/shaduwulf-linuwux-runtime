@@ -1,8 +1,3 @@
-# Shaduwulf's LinUwUx Runtime
-
-Standalone LinUwUx runtime rework distributed as a preloadable Linux shared
-library.
-
 ## Assets
 
 - `liblinuwux_runtime.so`
