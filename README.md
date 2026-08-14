@@ -73,7 +73,7 @@ This repository only develops and distributes the standalone LinUwUx runtime req
 
 As an alternative, pre-patched Proton builds are available through [**Proton-LinUwUx**](https://github.com/xshaduwulfx/proton-linuwux). Keep in mind that this approach depends on maintaining patched Proton builds and may become outdated as Proton and Wine evolve.
 
-If you're looking for information about the complete setup, requirements, compatibility or troubleshooting, please refer to the [**cs.rin.ru forum**](https://cs.rin.ru/) and the dedicated [**LinUwUx discussion thread**](https://cs.rin.ru/forum/viewtopic.php?f=10&t=159989).
+If you're looking for information about the complete setup, requirements, compatibility or troubleshooting, please refer to the dedicated [**cs.rin.ru thread**](https://cs.rin.ru/forum/viewtopic.php?f=10&t=159989).
 
 For questions regarding the HV bypass itself or its setup, please use the discussion thread above rather than opening an issue in this repository.
 
