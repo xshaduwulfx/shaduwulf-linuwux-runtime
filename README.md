@@ -1,4 +1,20 @@
-# Shaduwulf's LinUwUx Runtime
+<p align="center">
+  <img src="assets/banner.png" alt="Shaduwulf's LinUwUx Runtime" width="900">
+</p>
+
+<p align="center">
+  <a href="#how-do-i-use-the-runtime">Usage</a>
+  ·
+  <a href="#architecture">Architecture</a>
+  ·
+  <a href="#build">Build</a>
+  ·
+  <a href="#tests">Tests</a>
+  ·
+  <a href="#faq">FAQ</a>
+</p>
+
+---
 
 A standalone runtime rework of the functionality provided by
 `LinUwUx.patch`.
@@ -27,10 +43,9 @@ library.
 
 ### How do I use the runtime?
 
-First build and install it:
+First build the runtime as described in [Build](#build), then install it:
 
 ```sh
-make
 sh scripts/install-runtime.sh
 ```
 
