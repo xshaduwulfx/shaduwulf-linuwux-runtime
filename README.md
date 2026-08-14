@@ -16,7 +16,9 @@
 
 ---
 
-A standalone runtime rework of the functionality provided by
+## About
+
+**Shaduwulf's LinUwUx Runtime** is a standalone runtime rework of the functionality provided by
 `LinUwUx.patch`.
 
 Instead of applying the LinUwUx modifications directly to Wine and Proton,
