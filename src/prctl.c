@@ -33,6 +33,12 @@ static int resolve_prctl(void)
     if (!real_prctl)
     {
         errno = ENOSYS;
+
+        linuwux_log(
+            "prctl interposer initialization failed: "
+            "real prctl symbol unavailable"
+        );
+
         return -1;
     }
 
@@ -77,13 +83,28 @@ int linuwux_prctl_dispatch(
         a5
     );
 
+    if (option == PR_SET_SYSCALL_USER_DISPATCH &&
+        ret < 0)
+    {
+        linuwux_log(
+            "SUD prctl failed: mode=%lu errno=%d",
+            a2,
+            errno
+        );
+    }
+
     if (ret >= 0 &&
         option == PR_SET_SYSCALL_USER_DISPATCH &&
         a2 == PR_SYS_DISPATCH_ON)
     {
-        (void)linuwux_sud_learn_selector(
-            (unsigned char *)a5
-        );
+        if (linuwux_sud_learn_selector(
+                (unsigned char *)a5) != 0)
+        {
+            linuwux_log(
+                "SUD selector learning failed: selector=%p",
+                (void *)a5
+            );
+        }
     }
 
     return ret;

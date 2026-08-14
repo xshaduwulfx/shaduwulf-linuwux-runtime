@@ -1,6 +1,7 @@
 #define _GNU_SOURCE
 
 #include "registry.h"
+#include "runtime.h"
 
 #include <dlfcn.h>
 #include <stddef.h>
@@ -163,7 +164,12 @@ int linuwux_registry_ensure_hwprofileguid(void)
         );
 
     if (!ntdll)
+    {
+        linuwux_log(
+            "HwProfileGuid deferred: ntdll.so is not loaded"
+        );
         return -1;
+    }
 
     nt_create_key =
         (nt_create_key_fn)dlsym(
@@ -187,6 +193,14 @@ int linuwux_registry_ensure_hwprofileguid(void)
         !nt_set_value_key ||
         !nt_close)
     {
+        linuwux_log(
+            "HwProfileGuid deferred: ntdll registry API unavailable "
+            "(NtCreateKey=%d NtSetValueKey=%d NtClose=%d)",
+            nt_create_key != NULL,
+            nt_set_value_key != NULL,
+            nt_close != NULL
+        );
+
         dlclose(ntdll);
         return -1;
     }
@@ -233,6 +247,11 @@ int linuwux_registry_ensure_hwprofileguid(void)
 
     if (!LINUWUX_NT_SUCCESS(status))
     {
+        linuwux_log(
+            "HwProfileGuid NtCreateKey failed: NTSTATUS=%#x",
+            (unsigned int)(uint32_t)status
+        );
+
         dlclose(ntdll);
         return -2;
     }
@@ -251,12 +270,20 @@ int linuwux_registry_ensure_hwprofileguid(void)
     dlclose(ntdll);
 
     if (!LINUWUX_NT_SUCCESS(status))
+    {
+        linuwux_log(
+            "HwProfileGuid NtSetValueKey failed: NTSTATUS=%#x",
+            (unsigned int)(uint32_t)status
+        );
         return -2;
+    }
 
     atomic_store(
         &hwprofileguid_done,
         1
     );
+
+    linuwux_log("HwProfileGuid registry value ready");
 
     return 0;
 }
