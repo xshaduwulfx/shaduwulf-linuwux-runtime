@@ -89,7 +89,30 @@ _Static_assert(
     "unexpected OBJECT_ATTRIBUTES ABI"
 );
 
-static linuwux_wchar registry_path[] =
+static linuwux_wchar idconfigdb_path[] =
+{
+    '\\','R','e','g','i','s','t','r','y',
+    '\\','M','a','c','h','i','n','e',
+    '\\','S','y','s','t','e','m',
+    '\\','C','u','r','r','e','n','t','C','o','n','t','r','o','l','S','e','t',
+    '\\','C','o','n','t','r','o','l',
+    '\\','I','D','C','o','n','f','i','g','D','B',
+    0
+};
+
+static linuwux_wchar hardware_profiles_path[] =
+{
+    '\\','R','e','g','i','s','t','r','y',
+    '\\','M','a','c','h','i','n','e',
+    '\\','S','y','s','t','e','m',
+    '\\','C','u','r','r','e','n','t','C','o','n','t','r','o','l','S','e','t',
+    '\\','C','o','n','t','r','o','l',
+    '\\','I','D','C','o','n','f','i','g','D','B',
+    '\\','H','a','r','d','w','a','r','e',' ','P','r','o','f','i','l','e','s',
+    0
+};
+
+static linuwux_wchar profile_0001_path[] =
 {
     '\\','R','e','g','i','s','t','r','y',
     '\\','M','a','c','h','i','n','e',
@@ -139,6 +162,47 @@ static void init_unicode_string(
     string->buffer = buffer;
 }
 
+static linuwux_ntstatus create_or_open_key(
+    nt_create_key_fn nt_create_key,
+    linuwux_wchar *path,
+    size_t character_count,
+    linuwux_handle *key)
+{
+    linuwux_unicode_string key_name;
+    linuwux_object_attributes attributes;
+
+    init_unicode_string(
+        &key_name,
+        path,
+        character_count
+    );
+
+    memset(
+        &attributes,
+        0,
+        sizeof(attributes)
+    );
+
+    attributes.length =
+        sizeof(attributes);
+
+    attributes.object_name =
+        &key_name;
+
+    attributes.attributes =
+        LINUWUX_OBJ_CASE_INSENSITIVE;
+
+    return nt_create_key(
+        key,
+        LINUWUX_KEY_SET_VALUE,
+        &attributes,
+        0,
+        NULL,
+        LINUWUX_REG_OPTION_NON_VOLATILE,
+        NULL
+    );
+}
+
 static _Atomic int hwprofileguid_done;
 
 int linuwux_registry_ensure_hwprofileguid(void)
@@ -147,9 +211,7 @@ int linuwux_registry_ensure_hwprofileguid(void)
     nt_create_key_fn nt_create_key;
     nt_set_value_key_fn nt_set_value_key;
     nt_close_fn nt_close;
-    linuwux_unicode_string key_name;
     linuwux_unicode_string name;
-    linuwux_object_attributes attributes;
     linuwux_handle key = 0;
     linuwux_ntstatus status;
 
@@ -191,44 +253,17 @@ int linuwux_registry_ensure_hwprofileguid(void)
         return -1;
     }
 
-    init_unicode_string(
-        &key_name,
-        registry_path,
-        sizeof(registry_path) /
-            sizeof(registry_path[0]) - 1
-    );
-
-    init_unicode_string(
-        &name,
-        value_name,
-        sizeof(value_name) /
-            sizeof(value_name[0]) - 1
-    );
-
-    memset(
-        &attributes,
-        0,
-        sizeof(attributes)
-    );
-
-    attributes.length =
-        sizeof(attributes);
-
-    attributes.object_name =
-        &key_name;
-
-    attributes.attributes =
-        LINUWUX_OBJ_CASE_INSENSITIVE;
-
+    /*
+     * NtCreateKey does not recursively create missing parent keys.
+     * Ensure the LinUwUx registry hierarchy from the top down.
+     */
     status =
-        nt_create_key(
-            &key,
-            LINUWUX_KEY_SET_VALUE,
-            &attributes,
-            0,
-            NULL,
-            LINUWUX_REG_OPTION_NON_VOLATILE,
-            NULL
+        create_or_open_key(
+            nt_create_key,
+            idconfigdb_path,
+            sizeof(idconfigdb_path) /
+                sizeof(idconfigdb_path[0]) - 1,
+            &key
         );
 
     if (!LINUWUX_NT_SUCCESS(status))
@@ -236,6 +271,49 @@ int linuwux_registry_ensure_hwprofileguid(void)
         dlclose(ntdll);
         return -2;
     }
+
+    (void)nt_close(key);
+    key = 0;
+
+    status =
+        create_or_open_key(
+            nt_create_key,
+            hardware_profiles_path,
+            sizeof(hardware_profiles_path) /
+                sizeof(hardware_profiles_path[0]) - 1,
+            &key
+        );
+
+    if (!LINUWUX_NT_SUCCESS(status))
+    {
+        dlclose(ntdll);
+        return -2;
+    }
+
+    (void)nt_close(key);
+    key = 0;
+
+    status =
+        create_or_open_key(
+            nt_create_key,
+            profile_0001_path,
+            sizeof(profile_0001_path) /
+                sizeof(profile_0001_path[0]) - 1,
+            &key
+        );
+
+    if (!LINUWUX_NT_SUCCESS(status))
+    {
+        dlclose(ntdll);
+        return -2;
+    }
+
+    init_unicode_string(
+        &name,
+        value_name,
+        sizeof(value_name) /
+            sizeof(value_name[0]) - 1
+    );
 
     status =
         nt_set_value_key(
