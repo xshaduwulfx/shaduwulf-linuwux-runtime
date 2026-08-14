@@ -3,6 +3,20 @@
 </p>
 
 <p align="center">
+  <img src="https://img.shields.io/badge/status-experimental-orange" alt="Status: Experimental">
+  <img src="https://img.shields.io/badge/platform-Linux%20x86__64-blue" alt="Platform: Linux x86_64">
+  <a href="https://github.com/xshaduwulfx/shaduwulf-linuwux-runtime/actions/workflows/ci.yml">
+    <img src="https://github.com/xshaduwulfx/shaduwulf-linuwux-runtime/actions/workflows/ci.yml/badge.svg" alt="CI">
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/license-LGPL--2.1--or--later-blue" alt="License: LGPL-2.1-or-later">
+  </a>
+  <a href="https://github.com/xshaduwulfx/shaduwulf-linuwux-runtime/stargazers">
+    <img src="https://img.shields.io/github/stars/xshaduwulfx/shaduwulf-linuwux-runtime?style=flat" alt="GitHub Stars">
+  </a>
+</p>
+
+<p align="center">
   <a href="#how-do-i-use-the-runtime">Usage</a>
   ·
   <a href="#architecture">Architecture</a>
