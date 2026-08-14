@@ -3,8 +3,16 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/status-experimental-orange" alt="Status: Experimental">
-  <img src="https://img.shields.io/badge/platform-Linux%20x86__64-blue" alt="Platform: Linux x86_64">
+  Standalone Linux runtime for Wine &amp; Proton.
+</p>
+
+<p align="center">
+  <a href="#is-it-production-ready">
+    <img src="https://img.shields.io/badge/status-experimental-orange" alt="Status: Experimental">
+  </a>
+  <a href="#which-architectures-are-supported">
+    <img src="https://img.shields.io/badge/platform-Linux%20x86__64-blue" alt="Platform: Linux x86_64">
+  </a>
   <a href="https://github.com/xshaduwulfx/shaduwulf-linuwux-runtime/actions/workflows/ci.yml">
     <img src="https://github.com/xshaduwulfx/shaduwulf-linuwux-runtime/actions/workflows/ci.yml/badge.svg" alt="CI">
   </a>
