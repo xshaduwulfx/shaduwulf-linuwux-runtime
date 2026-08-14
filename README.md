@@ -56,15 +56,6 @@ implementation independently.
 
 ## FAQ
 
-### What is Shaduwulf's LinUwUx Runtime?
-
-Shaduwulf's LinUwUx Runtime is a standalone runtime rework of the
-functionality provided by the original `LinUwUx.patch`.
-
-Instead of keeping the LinUwUx modifications embedded in Wine and Proton,
-the runtime implements the relevant behavior in a preloadable Linux shared
-library.
-
 ### How does the Hypervisor (HV) bypass work? What are the requirements? What additional components are required besides this runtime?
 
 **Shaduwulf's LinUwUx Runtime is a required part of the setup, but it is not the complete solution.**
