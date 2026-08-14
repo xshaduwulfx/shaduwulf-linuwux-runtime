@@ -65,6 +65,18 @@ Instead of keeping the LinUwUx modifications embedded in Wine and Proton,
 the runtime implements the relevant behavior in a preloadable Linux shared
 library.
 
+### How does the Hypervisor (HV) bypass work? What are the requirements? What additional components are required besides this runtime?
+
+**Shaduwulf's LinUwUx Runtime is a required part of the setup, but it is not the complete solution.**
+
+This repository only develops and distributes the standalone LinUwUx runtime required for the HV bypass to work properly. The HV bypass itself, its configuration, additional requirements, and the overall setup are **outside the scope of this project**.
+
+As an alternative, pre-patched Proton builds are available through [**Proton-LinUwUx**](https://github.com/xshaduwulfx/proton-linuwux). Keep in mind that this approach depends on maintaining patched Proton builds and may become outdated as Proton and Wine evolve.
+
+If you're looking for information about the complete setup, requirements, compatibility or troubleshooting, please refer to the [**cs.rin.ru forum**](https://cs.rin.ru/) and the dedicated [**LinUwUx discussion thread**](https://cs.rin.ru/forum/viewtopic.php?f=10&t=159989).
+
+For questions regarding the HV bypass itself or its setup, please use the discussion thread above rather than opening an issue in this repository.
+
 ### How do I use the runtime?
 
 First build the runtime as described in [Build](#build), then install it:
